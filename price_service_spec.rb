@@ -6,9 +6,10 @@ RSpec.describe PriceService do
 
   let(:product) { { id: 1, base_price: 100, tax_percentage: 0 } }
   let(:user) { { id: 1, birthday_month: 5 } }
+
   describe '#call' do
     it 'calculates the total price' do
-      service = PriceService.new(product: product, user: user)
+      PriceService.new(product: product, user: user)
       expect(call).to eq(100.0)
     end
 
@@ -37,6 +38,16 @@ RSpec.describe PriceService do
 
       it 'applies 10% birthday discount' do
         expect(call).to eq(99.0)
+      end
+    end
+
+    context 'when both category and birthday discounts apply' do
+      subject(:call) { PriceService.new(product:, user:,).call }
+      let(:product) { { base_price: 100, tax_percentage: 10, category: 'beverages' } }
+      let(:user) { { id: 1, birthday_month: Date.today.month } }
+
+      it 'applies both discounts' do
+        expect(call).to eq(94.05)
       end
     end
   end
