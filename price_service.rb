@@ -5,8 +5,8 @@ class PriceService
     :product,
     :user
 
-  CATEGORY_DISCOUNT = 0.05
-  BIRTHDAY_DISCOUNT = 0.10
+  CATEGORY_DISCOUNT_RATE = 0.05
+  BIRTHDAY_DISCOUNT_RATE = 0.10
 
   def initialize(product:, user:)
     @product = product
@@ -14,8 +14,7 @@ class PriceService
   end
 
   def call
-    final_price = calculate_final_price
-    apply_discounts(final_price)
+    apply_discounts(calculate_final_price)
   end
 
   private
@@ -37,8 +36,8 @@ class PriceService
   end
 
   def apply_discounts(price)
-    price -= price * CATEGORY_DISCOUNT if eligible_for_category_discount?
-    price -= price * BIRTHDAY_DISCOUNT if birthday_month?
+    price -= price * category_discount if eligible_for_category_discount?
+    price -= price * birthday_discount if eligible_for_birthday_discount?
     price
   end
 
@@ -46,7 +45,15 @@ class PriceService
     %w[food beverages].include?(product[:category])
   end
 
-  def birthday_month?
+  def eligible_for_birthday_discount?
     Date.today.month == user[:birthday_month]
+  end
+
+  def category_discount
+    CATEGORY_DISCOUNT_RATE
+  end
+
+  def birthday_discount
+    BIRTHDAY_DISCOUNT_RATE
   end
 end
