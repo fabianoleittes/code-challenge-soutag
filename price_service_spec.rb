@@ -32,8 +32,8 @@ RSpec.describe PriceService do
     end
 
     context 'when it is the user\'s birthday month' do
-      subject(:call) { PriceService.new(product:, user:,).call }
-      let(:product) { { base_price: 100, tax_percentage: 10, category: 'electronics' } }
+      subject(:call) { PriceService.new(product:, user:).call }
+      let(:product) { { base_price: 100, tax_percentage: 10 } }
       let(:user) { { id: 1, birthday_month: Date.today.month } }
 
       it 'applies 10% birthday discount' do
@@ -42,12 +42,22 @@ RSpec.describe PriceService do
     end
 
     context 'when both category and birthday discounts apply' do
-      subject(:call) { PriceService.new(product:, user:,).call }
+      subject(:call) { PriceService.new(product:, user:).call }
       let(:product) { { base_price: 100, tax_percentage: 10, category: 'beverages' } }
       let(:user) { { id: 1, birthday_month: Date.today.month } }
 
       it 'applies both discounts' do
         expect(call).to eq(94.05)
+      end
+    end
+
+    context 'when product has no tax percentage' do
+      subject(:call) { PriceService.new(product:, user:).call }
+      let(:product) { { base_price: 100, category: 'beverages' } }
+      let(:user) { { id: 1, birthday_month: 6 } }
+
+      it 'calculates the final price without tax' do
+        expect(call).to eq(95.0)
       end
     end
   end
