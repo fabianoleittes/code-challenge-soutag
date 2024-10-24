@@ -1,5 +1,7 @@
 class PriceService
-  attr_reader :product, :user
+  attr_reader \
+    :product,
+    :user
 
   def initialize(product:, user:)
     @product = product
@@ -7,7 +9,7 @@ class PriceService
   end
 
   def call
-    final_price + tax_amount
+    final_price
   end
 
   private
@@ -21,6 +23,10 @@ class PriceService
   end
 
   def tax_amount
-    base_price * (product[:tax_percentage] / 100.0)
+    base_price * (tax_percentage / 100.0)
+  end
+
+  def tax_percentage
+    product.fetch(:tax_percentage, 0)
   end
 end
