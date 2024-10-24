@@ -1,7 +1,11 @@
+require 'date'
+
 class PriceService
   attr_reader \
     :product,
     :user
+
+  CATEGORY_DISCOUNT = 0.05
 
   def initialize(product:, user:)
     @product = product
@@ -9,7 +13,8 @@ class PriceService
   end
 
   def call
-    final_price
+    final_price = calculate_final_price
+    apply_discounts(final_price)
   end
 
   private
@@ -18,7 +23,7 @@ class PriceService
     product[:base_price]
   end
 
-  def final_price
+  def calculate_final_price
     base_price + tax_amount
   end
 
@@ -28,5 +33,14 @@ class PriceService
 
   def tax_percentage
     product.fetch(:tax_percentage, 0)
+  end
+
+  def apply_discounts(price)
+    price -= price * CATEGORY_DISCOUNT if eligible_for_category_discount?
+    price
+  end
+
+  def eligible_for_category_discount?
+    %w[food beverages].include?(product[:category])
   end
 end
