@@ -29,5 +29,15 @@ RSpec.describe PriceService do
         expect(call).to eq(104.5)
       end
     end
+
+    context 'when it is the user\'s birthday month' do
+      subject(:call) { PriceService.new(product:, user:,).call }
+      let(:product) { { base_price: 100, tax_percentage: 10, category: 'electronics' } }
+      let(:user) { { id: 1, birthday_month: Date.today.month } }
+
+      it 'applies 10% birthday discount' do
+        expect(call).to eq(99.0)
+      end
+    end
   end
 end
